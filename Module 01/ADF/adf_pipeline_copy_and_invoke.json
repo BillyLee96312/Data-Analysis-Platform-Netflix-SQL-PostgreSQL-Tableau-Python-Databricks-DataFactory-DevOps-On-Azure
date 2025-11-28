@@ -1,0 +1,33 @@
+{
+  "name": "pipeline_copy_and_invoke_databricks",
+  "properties": {
+    "activities": [
+      {
+        "name": "CopyFromRawToStaging",
+        "type": "Copy",
+        "typeProperties": {
+          "source": { "type": "DelimitedTextSource" },
+          "sink": { "type": "DelimitedTextSink" }
+        },
+        "inputs": [{ "referenceName": "LS_ADLS_Raw", "type": "LinkedServiceReference" }],
+        "outputs": [{ "referenceName": "LS_ADLS_Staging", "type": "LinkedServiceReference" }]
+      },
+      {
+        "name": "RunDatabricksNotebook",
+        "type": "DatabricksNotebook",
+        "dependsOn": [{ "activity": "CopyFromRawToStaging", "dependencyConditions": ["Succeeded"] }],
+        "typeProperties": {
+          "notebookPath": "/Repos/Shared/Module01/starter_notebook_read_transform_write",
+          "baseParameters": {
+            "raw_path": "@pipeline().parameters.raw_path",
+            "processed_path": "@pipeline().parameters.processed_path"
+          }
+        }
+      }
+    ],
+    "parameters": {
+      "raw_path": { "type": "String" },
+      "processed_path": { "type": "String" }
+    }
+  }
+}

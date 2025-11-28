@@ -1,0 +1,26 @@
+# Minimal Azure Pipelines YAML for Module 01 (Terraform + Notebook Upload)
+# Replace placeholders and add the required service connections before using.
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: TerraformCLI@0
+  displayName: 'Terraform init & apply'
+  inputs:
+    provider: 'azurerm'
+    command: 'apply'
+    workingDirectory: 'Module 01/Infrastructure'
+    environmentServiceName: 'AzureRM'
+    args: '-auto-approve'
+
+- script: |
+    echo "Upload Databricks notebook via Databricks CLI"
+    # This is a placeholder ? configure Databricks service connection and CLI auth
+    # databricks workspace import --language PYTHON --format SOURCE Module 01/notebooks/starter_notebook_read_transform_write.py /Repos/Shared/Module01/starter_notebook_read_transform_write.py
+  displayName: 'Upload notebook to Databricks'
+
+# Add additional tasks: run ADF pipeline, test DB connection, etc.
